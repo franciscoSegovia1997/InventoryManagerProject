@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block extraFiles %}
+    <script src="{% static 'usuarios.js' %}"></script>
+{% endblock %}
+
+{% block pageContent %}
+    <div class="container" style="height: 100vh; overflow: scroll;">
+        <h1 class="mt-3 mb-3">Usuarios</h1>
+        <br>
+        <div class="row mx-0">
+            <div class="col-2">
+                <div class="row mx-0">
+                    <a class="btn btn-success text-white" data-bs-toggle="modal" data-bs-target="#nuevoUsuario">Nuevo <i class="fa-solid fa-user-plus"></i></a>
+                </div>
+            </div>
+            <div class="col-2">
+                <div class="row mx-0">
+                    <a class="btn btn-success text-white" data-bs-toggle="modal" data-bs-target="#asignarAlmacen">Asignar</a>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div>
+            <table class="table table-bordered table-hover" id="usersTable" style="font-size: 12px;">
+                <thead class="table-dark">
+                    <th scope="col">Codigo</th>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Apellido</th>
+                    <th scope="col">Username</th>
+                    <th scope="col">Rol</th>
+                    <th scope="col">Almacen</th>
+                    <th scope="col">Editar</th>
+                    <th scope="col">Eliminar</th>
+                </thead>
+                <tbody>
+                    {% for usuarioUnitario in usuariosTotales %}
+                    <tr>
+                        <td>{{ usuarioUnitario.usuarioextendido.codigoUsuario }}</td>
+                        <td>{{ usuarioUnitario.first_name }}</td>
+                        <td>{{ usuarioUnitario.last_name }}</td>
+                        <td>{{ usuarioUnitario.username }}</td>
+                        <td>{{ usuarioUnitario.usuarioextendido.rolUsuario }}</td>
+                        <td>{{ usuarioUnitario.usuarioextendido.almacenUsuario.nombreAlmacen }}</td>
+                        <td class="text-center"><a class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editarUsuario" id="{{ usuarioUnitario.id }}" onclick="cargarUsuario(this.id)"><i class="fa-solid fa-edit"></i></a></td>
+                        <td class="text-center"><a class="btn btn-danger" href="{% url 'app3:eliminarUsuario' usuarioUnitario.id %}"><i class="fa-solid fa-trash-can"></i></a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block modalContent %}
+    <!-- New user modal window -->
+    <div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog" id="nuevoUsuario">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <form action="{% url 'app3:consolaInicio' %}" method="post">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h5 class="modal-title">Nuevo usuario</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row mb-3 mt-3">
+                            <div class="col-6">
+                                <label>Username</label>
+                                <input type="text" class="form-control" name="nuevoUsername" id="nuevoUsername" required>
+                            </div>
+                            <div class="col-6">
+                                <label>Contraseña</label>
+                                <input type="password" class="form-control" name="nuevoPassword" id="nuevoPassword" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <label>Nombre</label>
+                                <input type="text" class="form-control" name="nuevoNombre" id="nuevoNombre" required>
+                            </div>
+                            <div class="col-6">
+                                <label>Apellido</label>
+                                <input type="text" class="form-control" name="nuevoApellido" id="nuevoApellido" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <label>Email</label>
+                                <input type="text" class="form-control" name="nuevoEmail" id="nuevoEmail" required>
+                            </div>
+                            <div class="col-6">
+                                <label>Rol</label>
+                                <select class="form-select" name="rolUsuario" id="rolUsuario">
+                                    <option value=""></option>
+                                    <option value="ADMIN">ADMINISTRADOR</option>
+                                    <option value="VENDEDOR">VENDEDOR</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Agregar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- New user modal window -->
+    <div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog" id="asignarAlmacen">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <form action="{% url 'app3:asignarAlmacen' %}" method="post">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h5 class="modal-title">Asignar almacen</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row mb-3 mt-3">
+                            <div class="col-6">
+                                <label>Usuario</label>
+                                <select class="form-select" name="usuarioSeleccionado" required>
+                                    <option value=""></option>
+                                    {% for usuarioInfo in usuariosTotales %}
+                                    <option value="{{ usuarioInfo.id }}">{{ usuarioInfo.first_name }} {{ usuarioInfo.last_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <label>Almacen</label>
+                                <select class="form-select" name="almacenSeleccionado" required>
+                                    <option value=""></option>
+                                    {% for almacenInfo in almacenesTotales %}
+                                    <option value="{{ almacenInfo.id }}">{{ almacenInfo.nombreAlmacen }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Asignar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- New user modal window -->
+    <div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog" id="editarUsuario">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <form action="{% url 'app3:actualizarUsuario' %}" method="post">
+                {% csrf_token %}
+                    <div class="modal-header">
+                        <input style="display: none;" id="editarId" name="editarId">
+                        <h5 class="modal-title">Actualizar usuario</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row mb-3 mt-3">
+                            <div class="col-6">
+                                <label>Username</label>
+                                <input type="text" class="form-control" name="editarUsername" id="editarUsername" readonly>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <label>Nombre</label>
+                                <input type="text" class="form-control" name="editarNombre" id="editarNombre" required>
+                            </div>
+                            <div class="col-6">
+                                <label>Apellido</label>
+                                <input type="text" class="form-control" name="editarApellido" id="editarApellido" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <label>Email</label>
+                                <input type="text" class="form-control" name="editarEmail" id="editarEmail" required>
+                            </div>
+                            <div class="col-6">
+                                <label>Rol</label>
+                                <input type="text" class="form-control" name="editarRol" id="editarRol" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Agregar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

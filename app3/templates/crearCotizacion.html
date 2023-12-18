@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block extraFiles %}
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+{% endblock %}
+
+{% block pageContent %}
+    <div id="app" class="container" style="height: 100vh; overflow: scroll;">
+    </div>
+
+    <script type="text/babel" src="{% static 'componentes/App.js' %}"></script>
+
+    <script type="text/babel">
+        const root = ReactDOM.createRoot(document.querySelector('#app'))
+        root.render(<App />)
+    </script>
+{% endblock %}

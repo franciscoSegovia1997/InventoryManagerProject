@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block pageContent %}
+    <div class="container" style="height: 100vh; overflow: scroll;">
+        <h1 class="mt-3 mb-3">Productos</h1>
+        <br>
+        <div class="row mx-0">
+            <div class="col-2">
+                <div class="row mx-0">
+                    <a class="btn btn-success text-white" data-bs-toggle="modal" data-bs-target="#nuevoProducto">Nuevo <i class="fa-solid fa-store"></i></a>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div>
+            <table class="table table-bordered table-hover" id="usersTable" style="font-size: 12px;">
+                <thead class="table-dark">
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Codigo</th>
+                    <th scope="col">Precio</th>
+                    <th scope="col">Cantidad</th>
+                    <th scope="col">Peso</th>
+                    <th scope="col">Almacen</th>
+                    <th scope="col">Editar</th>
+                    <th scope="col">Eliminar</th>
+                </thead>
+                <tbody>
+                    {% for productoInfo in productosTotales %}
+                    <tr>
+                        <td>{{ productoInfo.nombreProducto }}</td>
+                        <td>{{ productoInfo.codigoProducto }}</td>
+                        <td>{{ productoInfo.precioProducto }}</td>
+                        <td>{{ productoInfo.cantidadProducto }}</td>
+                        <td>{{ productoInfo.pesoProducto }}</td>
+                        <td>{{ productoInfo.almacenProducto.nombreAlmacen }}</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+
+{% block modalContent %}
+    <!-- Nuevo producto modal window -->
+    <div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog" id="nuevoProducto">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <form action="{% url 'app3:productos' %}" method="post">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h5 class="modal-title">Nuevo producto</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row mb-3 mt-3">
+                            <div class="col-6">
+                                <label>Nombre</label>
+                                <input type="text" class="form-control" name="nombreProducto" id="nombreProducto" required>
+                            </div>
+                            <div class="col-6">
+                                <label>Codigo</label>
+                                <input type="text" class="form-control" name="codigoProducto" id="codigoProducto" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <label>Precio</label>
+                                <input type="text" class="form-control" name="precioProducto" id="precioProducto" required>
+                            </div>
+                            <div class="col-6">
+                                <label>Cantidad</label>
+                                <input type="text" class="form-control" name="cantidadProducto" id="cantidadProducto" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <label>Peso</label>
+                                <input type="text" class="form-control" name="pesoProducto" id="pesoProducto" required>
+                            </div>
+                            <div class="col-6">
+                                <label>Almacen</label>
+                                <select class="form-select" name="almacenProducto" required>
+                                    <option value=""></option>
+                                    {% for almacenInfo in almacenesTotales %}
+                                    <option value="{{ almacenInfo.id }}">{{ almacenInfo.nombreAlmacen }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Crear</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

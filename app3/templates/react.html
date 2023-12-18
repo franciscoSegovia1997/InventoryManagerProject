@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block extraFiles %}
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+{% endblock %}
+
+{% block pageContent %}
+    <div id="app" class="container" style="height: 100vh; overflow: scroll;">
+    </div>
+
+    <script type="text/babel">
+        function Iterar()
+        {
+            const [state,setState] = React.useState({
+                usuarios:['Alexander','Javier'],
+                nuevoUsuario:''
+            })
+
+            function actualizarNuevoUsuario(event)
+            {
+                setState({
+                    usuarios:state.usuarios,
+                    nuevoUsuario: event.target.value
+                })
+            }
+
+            function agregarUsuario()
+            {
+                setState({
+                    usuarios:[...state.usuarios,state.nuevoUsuario],
+                    nuevoUsuario:'',
+                })
+            }
+
+
+            return(
+                <div className='row'>
+                    {
+                        state.usuarios.map((usuario,index) => {
+                            return(<App key={index} nombre={usuario} />);
+                        })  
+                    }
+                    <div className='row'>
+                        <div className='col-4'>
+                            <input className='form-control' value={state.nuevoUsuario} onChange={actualizarNuevoUsuario}/>
+                        </div>
+                        <div className='col-2'>
+                            <button className='btn btn-primary' onClick={agregarUsuario}>Agregar</button>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function App(props)
+        {
+            return(
+                <h1>Bienvenido {props.nombre}</h1>
+            );
+        }
+        const root = ReactDOM.createRoot(document.querySelector('#app'))
+        root.render(<Iterar />)
+    </script>
+{% endblock %}
